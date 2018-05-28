@@ -14,30 +14,11 @@ const store = {
       temp: null,
     },
     loadingForecast: false,
-    forecastWeather: {
-      firstDay: {
-        d: null,
-        icon: null,
-        tempMin: null,
-        tempMax: null,
-      },
-      secondDay: {
-        d: null,
-        icon: null,
-        tempMin: null,
-        tempMax: null,
-      },
-      thirdDay: {
-        d: null,
-        icon: null,
-        tempMin: null,
-        tempMax: null,
-      },
-    },
+    forecastWeather: [],
   },
   mutations: {
     SET_CURRENT_WEATHER(state, payload) {
-      state.currentWeather.icon = payload.weather[0].icon;
+      state.currentWeather.icon = `wi-icon-${payload.weather[0].id}`;
       state.currentWeather.temp = _.round(payload.main.temp);
     },
     SET_CURRENT_LOADING(state, payload) {
@@ -47,6 +28,7 @@ const store = {
       const weekDayMin = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       let nbDay;
       const arrayDataDays = [];
+      const arrayDataDaysCleaned = [];
       const objDay = {
         weekDay: null,
         tempMin: [],
@@ -69,30 +51,28 @@ const store = {
 
         arrayDataDays[j].tempMin.push(payload.list[i].main.temp_min);
         arrayDataDays[j].tempMax.push(payload.list[i].main.temp_max);
-        arrayDataDays[j].listIcon.push(payload.list[i].weather[0].id);
+        arrayDataDays[j].listIcon.push(`wi-icon-${payload.list[i].weather[0].id}`);
       }
 
-      state.forecastWeather.firstDay.d = weekDayMin[arrayDataDays[1].weekDay];
-      state.forecastWeather.firstDay.tempMin = _.round(_.min(arrayDataDays[1].tempMin));
-      state.forecastWeather.firstDay.tempMax = _.round(_.max(arrayDataDays[1].tempMax));
-      state.forecastWeather.firstDay.icon = _.chain(arrayDataDays[1].listIcon).countBy().toPairs().maxBy(_.last)
-        .head()
-        .value();
+      const meteoObj = {
+        d: null,
+        icon: null,
+        tempMin: null,
+        tempMax: null,
+      };
 
-      state.forecastWeather.secondDay.d = weekDayMin[arrayDataDays[2].weekDay];
-      state.forecastWeather.secondDay.tempMin = _.round(_.min(arrayDataDays[2].tempMin));
-      state.forecastWeather.secondDay.tempMax = _.round(_.max(arrayDataDays[2].tempMax));
-      state.forecastWeather.secondDay.icon = _.chain(arrayDataDays[2].listIcon).countBy().toPairs().maxBy(_.last)
-        .head()
-        .value();
+      for (let day = 0; day < arrayDataDays.length; day += 1) {
+        const meteoDay = _.cloneDeep(meteoObj);
+        meteoDay.d = weekDayMin[arrayDataDays[day].weekDay];
+        meteoDay.tempMin = _.round(_.min(arrayDataDays[day].tempMin));
+        meteoDay.tempMax = _.round(_.max(arrayDataDays[day].tempMax));
+        meteoDay.icon = _.chain(arrayDataDays[day].listIcon).countBy().toPairs().maxBy(_.last)
+          .head()
+          .value();
+        arrayDataDaysCleaned.push(meteoDay);
+      }
 
-
-      state.forecastWeather.thirdDay.d = weekDayMin[arrayDataDays[3].weekDay];
-      state.forecastWeather.thirdDay.tempMin = _.round(_.min(arrayDataDays[3].tempMin));
-      state.forecastWeather.thirdDay.tempMax = _.round(_.max(arrayDataDays[3].tempMax));
-      state.forecastWeather.thirdDay.icon = _.chain(arrayDataDays[3].listIcon).countBy().toPairs().maxBy(_.last)
-        .head()
-        .value();
+      state.forecastWeather = arrayDataDaysCleaned;
     },
     SET_FORECAST_LOADING(state, payload) {
       state.loadingForecast = payload;
