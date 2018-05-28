@@ -3,6 +3,7 @@
     <img src="../assets/logo.png">
     {{currentWeather}}
     {{forecastWeather}}
+    {{cities}}
     <button class="button counter__increment" @click="getWeather"><i class="fa fa-plus"></i></button>
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
@@ -11,12 +12,18 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
-import store from "../store"
+import store from "../store";
+import cities from "../assets/static/cities-fr.js";
 
 export default {
   name: 'home',
   components: {
     HelloWorld,
+  },
+  data() {
+    return {
+      cities: cities,
+    };
   },
   computed: {
     count () {
