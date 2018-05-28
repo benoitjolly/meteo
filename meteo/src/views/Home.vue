@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       cities: cities,
-      selectedCity: {nm:'paris'},
+      selectedCity: cities[0],
       confSpinner: {
         speed: 0.5,
         color: '9577CB',
@@ -92,8 +92,9 @@ export default {
       this.$store.dispatch('getForecastWeather',city);
     }
   },
-  mounted: function(){
-    this.getWeather('paris');
+  mounted: function () {
+    // this.getWeather('paris');
+    this.getWeather(this.cities[0].nm);
   },
 };
 </script>
